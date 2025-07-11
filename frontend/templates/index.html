@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo - AI Chat</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+    <div id="app" x-data="echoApp()" x-init="init()">
+        <header class="header">
+            <div class="container">
+                <h1>🎯 Echo</h1>
+                <p>AI-powered conversations with Carlos</p>
+            </div>
+        </header>
+
+        <main class="container">
+            <!-- Comment Form -->
+            <div class="comment-form">
+                <h2>Start a conversation</h2>
+                <form @submit.prevent="submitComment()">
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            x-model="newComment.email" 
+                            required
+                            placeholder="your@email.com"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="content">Message:</label>
+                        <textarea 
+                            id="content" 
+                            x-model="newComment.content" 
+                            required
+                            placeholder="Ask Carlos anything about AI development..."
+                            rows="4"
+                        ></textarea>
+                    </div>
+                    <button type="submit" :disabled="loading" class="btn-primary">
+                        <span x-show="!loading">Send Message</span>
+                        <span x-show="loading">Sending...</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Comments Display -->
+            <div class="comments-section">
+                <h2>Conversation</h2>
+                <div x-show="comments.length === 0 && !loading" class="no-comments">
+                    No comments yet. Start the conversation!
+                </div>
+                
+                <div class="comments-list">
+                    <template x-for="comment in comments" :key="comment.id">
+                        <div class="comment-thread">
+                            <div x-html="renderComment(comment, 0)"></div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Reply Form Modal -->
+            <div x-show="replyForm.show" class="modal-overlay" @click="closeReplyForm()">
+                <div class="modal-content" @click.stop>
+                    <h3>Reply to comment</h3>
+                    <form @submit.prevent="submitReply()">
+                        <div class="form-group">
+                            <label for="reply-email">Email:</label>
+                            <input 
+                                type="email" 
+                                id="reply-email" 
+                                x-model="replyForm.email" 
+                                required
+                            >
+                        </div>
+                        <div class="form-group">
+                            <label for="reply-content">Reply:</label>
+                            <textarea 
+                                id="reply-content" 
+                                x-model="replyForm.content" 
+                                required
+                                rows="3"
+                            ></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" @click="closeReplyForm()" class="btn-secondary">
+                                Cancel
+                            </button>
+                            <button type="submit" :disabled="loading" class="btn-primary">
+                                <span x-show="!loading">Send Reply</span>
+                                <span x-show="loading">Sending...</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <!-- Status Messages -->
+        <div x-show="message" class="message" :class="messageType" x-text="message"></div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
